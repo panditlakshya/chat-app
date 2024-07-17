@@ -114,7 +114,9 @@ const ChatPage = ({ socket, username, roomId }: any) => {
         </CardHeader>
         <CardContent>
           {users.map((x) => (
-            <div key={x}>{x}</div>
+            <div className="p-1" key={x}>
+              {x}
+            </div>
           ))}
         </CardContent>
       </Card>
