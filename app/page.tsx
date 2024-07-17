@@ -15,11 +15,10 @@ export default function Home() {
   const { toast } = useToast();
 
   var socket: any;
-  socket = io("http://localhost:3001");
+  socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`);
 
   const handleJoin = () => {
     if (userName !== "" && roomId !== "") {
-      // console.log(userName, "userName", roomId, "roomId");
       socket.emit("join_room", roomId, userName);
       setShowSpinner(true);
       // You can remove this setTimeout and add your own logic
@@ -46,9 +45,10 @@ export default function Home() {
         }
       >
         <div
-          className="flex flex-col gap-4"
+          className="flex flex-col gap-4 w-1/3"
           style={{ display: showChat ? "none" : "" }}
         >
+          <h1 className="text-3xl font-bold">Chat App</h1>
           <Input
             type="text"
             placeholder="Username"
@@ -57,7 +57,7 @@ export default function Home() {
           />
           <Input
             type="text"
-            placeholder="room id"
+            placeholder="Room"
             onChange={(e) => setroomId(e.target.value)}
             disabled={showSpinner}
           />
