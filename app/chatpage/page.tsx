@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -13,6 +12,9 @@ import { useToast } from "@/components/ui/use-toast";
 import React, { useEffect, useRef, useState } from "react";
 import { IoIosPeople } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
+import { MdOutlineEmojiEmotions } from "react-icons/md";
 
 interface IMsgDataTypes {
   roomId: String | number;
@@ -26,6 +28,7 @@ const ChatPage = ({ socket, username, roomId, handleLeave }: any) => {
   const [chat, setChat] = useState<IMsgDataTypes[]>([]);
   const [users, setUsers] = useState([]);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [emoji, setEmoji] = useState(false);
   const { toast } = useToast();
 
   const scrollToBottom = () => {
@@ -71,7 +74,7 @@ const ChatPage = ({ socket, username, roomId, handleLeave }: any) => {
 
   return (
     <div className="grid grid-cols-4 gap-1 p-2 h-screen">
-      <Card className="col-span-3 flex flex-col h-full max-h-[calc(100vh-1rem)]">
+      <Card className="relative col-span-3 flex flex-col h-full max-h-[calc(100vh-1rem)]">
         <CardHeader className="bg-[#3b3b3b] rounded-t-lg text-white z-[4]">
           <CardTitle className="flex flex-row justify-between">
             <div className="flex flex-row gap-2">
@@ -118,7 +121,7 @@ const ChatPage = ({ socket, username, roomId, handleLeave }: any) => {
           ))}
           <div ref={messagesEndRef} />
         </CardContent>
-        <CardFooter className="z-[4] bg-[#3b3b3b] flex justify-center items-center p-3 rounded-b-lg">
+        <CardFooter className=" z-[4] bg-[#3b3b3b] flex justify-center items-center p-3 rounded-b-lg">
           <form className="flex gap-2 w-full" onSubmit={(e) => sendData(e)}>
             <Input
               type="text"
@@ -126,6 +129,30 @@ const ChatPage = ({ socket, username, roomId, handleLeave }: any) => {
               placeholder="Type your message.."
               onChange={(e) => setCurrentMsg(e.target.value)}
             />
+            <button type="button" onClick={() => setEmoji(!emoji)}>
+              <MdOutlineEmojiEmotions color="white" size={32} />
+            </button>
+            {emoji && (
+              <span className="absolute bottom-8 -right-[12rem]">
+                <Picker
+                  data={data}
+                  onEmojiSelect={(emoji: any) => {
+                    console.log(emoji);
+                    const sym = emoji.unified.split("_");
+                    const codeArray: string[] = [];
+                    sym.forEach((x: any) => {
+                      codeArray.push("0x" + x);
+                    });
+                    //@ts-ignore
+                    let _emoji = String.fromCodePoint(...codeArray);
+                    setCurrentMsg(currentMsg + _emoji);
+                  }}
+                  emojiSize={20}
+                  emojiButtonSize={28}
+                  onClickOutside={() => setEmoji(false)}
+                />
+              </span>
+            )}
             <Button className="bg-[#204F46]">Send</Button>
           </form>
         </CardFooter>
