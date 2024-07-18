@@ -61,8 +61,8 @@ const ChatPage = ({ socket, username, roomId }: any) => {
   }, [socket]);
 
   return (
-    <div className="grid grid-cols-4 gap-2 p-4 h-screen">
-      <Card className="col-span-3 flex flex-col h-full max-h-[calc(100vh-2rem)]">
+    <div className="grid grid-cols-4 gap-1 p-2 h-screen">
+      <Card className="col-span-3 flex flex-col h-full max-h-[calc(100vh-1rem)]">
         <CardHeader className="bg-[#282829] rounded-t-lg text-white z-[4]">
           <CardTitle>
             <div className="flex flex-row gap-2">
