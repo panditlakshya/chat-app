@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import React, { useEffect, useRef, useState } from "react";
 import { IoIosPeople } from "react-icons/io";
+import { IoClose } from "react-icons/io5";
 
 interface IMsgDataTypes {
   roomId: String | number;
@@ -20,7 +21,7 @@ interface IMsgDataTypes {
   time: String;
 }
 
-const ChatPage = ({ socket, username, roomId }: any) => {
+const ChatPage = ({ socket, username, roomId, handleLeave }: any) => {
   const [currentMsg, setCurrentMsg] = useState("");
   const [chat, setChat] = useState<IMsgDataTypes[]>([]);
   const [users, setUsers] = useState([]);
@@ -52,12 +53,12 @@ const ChatPage = ({ socket, username, roomId }: any) => {
   }, [chat.length]);
 
   useEffect(() => {
-    socket.on("receive_msg", (data: IMsgDataTypes) => {
+    // if (!!socket) {
+    socket?.on("receive_msg", (data: IMsgDataTypes) => {
       setChat((pre) => [...pre, data]);
     });
 
-    socket.on("update users", (data: any) => {
-      console.log(data, "data");
+    socket?.on("update users", (data: any) => {
       setUsers(data);
       setTimeout(() => {
         toast({
@@ -65,17 +66,31 @@ const ChatPage = ({ socket, username, roomId }: any) => {
         });
       }, 500);
     });
+    // }
   }, [socket]);
 
   return (
     <div className="grid grid-cols-4 gap-1 p-2 h-screen">
       <Card className="col-span-3 flex flex-col h-full max-h-[calc(100vh-1rem)]">
         <CardHeader className="bg-[#3b3b3b] rounded-t-lg text-white z-[4]">
-          <CardTitle>
+          <CardTitle className="flex flex-row justify-between">
             <div className="flex flex-row gap-2">
               <IoIosPeople size={26} />
               <span>{roomId}</span>
             </div>
+            <button
+              type="button"
+              onClick={async () => {
+                socket.emit("leave_room", roomId, username);
+                handleLeave();
+                setChat([]);
+                toast({
+                  description: "You've left the room",
+                });
+              }}
+            >
+              <IoClose />
+            </button>
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col flex-1 gap-1 overflow-auto pb-2">
