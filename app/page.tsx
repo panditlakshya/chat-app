@@ -59,7 +59,7 @@ export default function Home() {
         }
       >
         <div
-          className="flex flex-col gap-4 w-1/3"
+          className="flex flex-col gap-4 w-3/4 sm:w-1/3"
           style={{ display: showChat ? "none" : "" }}
         >
           <h1 className="text-3xl font-bold">Chat App</h1>
