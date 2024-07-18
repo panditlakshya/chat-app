@@ -1,11 +1,13 @@
 "use client";
 import { io } from "socket.io-client";
-import { useState } from "react";
-import ChatPage from "./chatpage/page";
+import { useEffect, useState } from "react";
+// import ChatPage from "./chatpage/page";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { IoReload } from "react-icons/io5";
 import { useToast } from "@/components/ui/use-toast";
+import ChatPage from "./chatpage/page";
+// import { Socket } from "socket.io";
 
 export default function Home() {
   const [showChat, setShowChat] = useState(false);
@@ -13,12 +15,17 @@ export default function Home() {
   const [showSpinner, setShowSpinner] = useState(false);
   const [roomId, setroomId] = useState("");
   const { toast } = useToast();
+  const [socket, setSocket] = useState<ReturnType<typeof io> | null>(null);
 
-  var socket: any;
-  socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`);
+  useEffect(() => {
+    if (!socket) {
+      const _socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`);
+      setSocket(_socket);
+    }
+  }, []);
 
   const handleJoin = () => {
-    if (userName !== "" && roomId !== "") {
+    if (socket && userName !== "" && roomId !== "") {
       socket.emit("join_room", roomId, userName);
       setShowSpinner(true);
       // You can remove this setTimeout and add your own logic
@@ -35,6 +42,13 @@ export default function Home() {
       });
     }
   };
+
+  const handleLeave = () => {
+    setShowChat(false);
+    setUserName("");
+    setroomId("");
+  };
+
   return (
     <div>
       <div
@@ -52,12 +66,14 @@ export default function Home() {
           <Input
             type="text"
             placeholder="Username"
+            value={userName}
             onChange={(e) => setUserName(e.target.value)}
             disabled={showSpinner}
           />
           <Input
             type="text"
             placeholder="Room"
+            value={roomId}
             onChange={(e) => setroomId(e.target.value)}
             disabled={showSpinner}
           />
@@ -74,7 +90,12 @@ export default function Home() {
         </div>
       </div>
       <div style={{ display: !showChat ? "none" : "" }}>
-        <ChatPage socket={socket} roomId={roomId} username={userName} />
+        <ChatPage
+          socket={socket}
+          roomId={roomId}
+          username={userName}
+          handleLeave={handleLeave}
+        />
       </div>
     </div>
   );
