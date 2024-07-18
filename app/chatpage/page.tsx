@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 import React, { useEffect, useRef, useState } from "react";
 import { IoIosPeople } from "react-icons/io";
 
@@ -24,6 +25,7 @@ const ChatPage = ({ socket, username, roomId }: any) => {
   const [chat, setChat] = useState<IMsgDataTypes[]>([]);
   const [users, setUsers] = useState([]);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const { toast } = useToast();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -57,13 +59,18 @@ const ChatPage = ({ socket, username, roomId }: any) => {
     socket.on("update users", (data: any) => {
       console.log(data, "data");
       setUsers(data);
+      setTimeout(() => {
+        toast({
+          description: "Welcome to the room!",
+        });
+      }, 500);
     });
   }, [socket]);
 
   return (
     <div className="grid grid-cols-4 gap-1 p-2 h-screen">
       <Card className="col-span-3 flex flex-col h-full max-h-[calc(100vh-1rem)]">
-        <CardHeader className="bg-[#282829] rounded-t-lg text-white z-[4]">
+        <CardHeader className="bg-[#3b3b3b] rounded-t-lg text-white z-[4]">
           <CardTitle>
             <div className="flex flex-row gap-2">
               <IoIosPeople size={26} />
@@ -96,7 +103,7 @@ const ChatPage = ({ socket, username, roomId }: any) => {
           ))}
           <div ref={messagesEndRef} />
         </CardContent>
-        <CardFooter className="z-[4] bg-[#282829] flex justify-center items-center p-3 rounded-b-lg">
+        <CardFooter className="z-[4] bg-[#3b3b3b] flex justify-center items-center p-3 rounded-b-lg">
           <form className="flex gap-2 w-full" onSubmit={(e) => sendData(e)}>
             <Input
               type="text"
@@ -108,16 +115,21 @@ const ChatPage = ({ socket, username, roomId }: any) => {
           </form>
         </CardFooter>
       </Card>
-      <Card className="col-span-1 ">
-        <CardHeader className="bg-[#282829] rounded-t-lg text-white z-[4]">
+      <Card className="col-span-1">
+        <CardHeader className="bg-[#3b3b3b] rounded-t-lg text-white z-[4]">
           <CardTitle>Current Members </CardTitle>
         </CardHeader>
         <CardContent>
-          {users.map((x) => (
-            <div className="p-1" key={x}>
-              {x}
-            </div>
-          ))}
+          <div className="flex flex-col gap-y-2 h-80 overflow-auto mt-4">
+            {users.map((x) => (
+              <div
+                className="px-4 py-2 bg-[#3b3b3b] rounded-sm text-white font-medium"
+                key={x}
+              >
+                {x}
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
     </div>

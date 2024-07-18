@@ -25,7 +25,7 @@ export default function Home() {
       setTimeout(() => {
         setShowChat(true);
         setShowSpinner(false);
-      }, 1000);
+      }, 500);
     } else {
       toast({
         variant: "destructive",
